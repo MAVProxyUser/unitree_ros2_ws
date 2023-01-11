@@ -17,6 +17,7 @@ unitree_legged_sdk	src/unitree_legged_sdk	(cmake)
 ```
 
 If you do see them, go on and source the ROS2 environment, and start to build packages
+```
 user@dev0:~/github/unitree_ros2_ws$ source /opt/ros/galactic/setup.sh
 user@dev0:~/github/unitree_ros2_ws$ colcon build
 ```
