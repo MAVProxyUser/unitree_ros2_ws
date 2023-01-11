@@ -1,0 +1,6 @@
+[submodule "src/unitree_ros2_to_real"]
+	path = src/unitree_ros2_to_real
+	url = git@github.com:MAVProxyUser/unitree_ros2_to_real.git
+[submodule "src/unitree_legged_sdk_typofix_3.5.1"]
+	path = src/unitree_legged_sdk
+	url = git@github.com:MAVProxyUser/unitree_legged_sdk_typofix_3.5.1.git
