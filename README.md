@@ -52,7 +52,8 @@ Start the high level server
 ```
 user@dev0:~$ cd ~/unitree_ros2_ws
 user@dev0:~/unitree_ros2_ws$ source /opt/ros/galactic/setup.sh
-user@dev0:~/unitree_ros2_ws$ source install/setup.sh 
+user@dev0:~/unitree_ros2_ws$ source install/setup.sh
+user@dev0:~/unitree_ros2_ws$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./src/unitree_legged_sdk/lib/
 user@dev0:~/unitree_ros2_ws$ ros2 run unitree_legged_real ros2_udp highlevel
 ```
 
@@ -61,5 +62,6 @@ On a second window
 user@dev0:~$ cd ~/unitree_ros2_ws
 user@dev0:~/unitree_ros2_ws$ source /opt/ros/galactic/setup.sh
 user@dev0:~/unitree_ros2_ws$ source install/setup.sh
+user@dev0:~/unitree_ros2_ws$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./src/unitree_legged_sdk/lib/
 user@dev0:~/unitree_ros2_ws$ ros2 run unitree_legged_real ros2_walk_example
 ```
