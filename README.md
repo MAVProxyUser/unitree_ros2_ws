@@ -1,67 +1,186 @@
-# Workspace for unitree_ros2_real, and unitree_legged_sdk version 3.5.1 ROS2 examples 
+# Ubuntu 18.04
 
-You are expected to have both colcon, and ROS2 galactic installed. Checkout the repo, and list the colcon packages as a sanity check 
+Install Ubuntu 18.04, this was written using ubuntu-18.04.6-desktop-amd64.iso from https://releases.ubuntu.com/18.04/ubuntu-18.04.6-desktop-amd64.iso
 
-```
-user@dev0:~$ cd 
-user@dev0:~$ git clone https://github.com/MAVProxyUser/unitree_ros2_ws.git --recurse-submodules
-user@dev0:~$ cd unitree_ros2_ws
-user@dev0:~/unitree_ros2_ws$ colcon list
-```
+The machine that was used for this document was hardwired to my local LAN with internet connectivity. Additionally it has a WiFi card currently connected to nothing. 
 
-If you don't see the following packages, you have a problem
-```
-ros2_unitree_legged_msgs	src/ros2_unitree_legged_msgs	(ros.ament_cmake)
-unitree_legged_real	src/unitree_ros2_to_real	(ros.ament_cmake)
-unitree_legged_sdk	src/unitree_legged_sdk	(cmake)
-```
+Select the "Minimal installation", "Download updates while installing Ubuntu", and "Install third-party software for graphics and Wi-Fi hardware and additional media formats" options. 
 
-If you do see them, go on and source the ROS2 environment, and start to build packages
+Open a terminal:
 ```
-user@dev0:~/github/unitree_ros2_ws$ source /opt/ros/galactic/setup.sh
-user@dev0:~/github/unitree_ros2_ws$ colcon build
+sudo apt-get install net-tools openssh-server
+sudo apt-get update
+sudo apt-get dist-upgrade
+
+reboot
 ```
 
-# Troubleshooting
-
-Don't see any packages? Did you run the wrong git command? Did you forget the submodules? 
-
+From another machine:
 ```
-user@dev0:~$ git clone https://github.com/MAVProxyUser/unitree_ros2_ws.git 
-user@dev0:~$ cd unitree_ros2_ws
-user@dev0:~/unitree_ros2_ws$ colcon list
+ssh 192.168.1.106 
+(once connected)
+rm -rf Documents/ Downloads/ Music/ Pictures/ Public/ Templates/ Videos/
+
+sudo apt install software-properties-common
+sudo add-apt-repository universe
 ```
-
-If you saw nothing on your colcon listing, then you will need to run the following commands from within your unitree_ros2_ws folder.  
-
-user@dev0:~/unitree_ros2_ws$ git submodule update --init --recursive
-user@dev0:~/unitree_ros2_ws$ colcon list
-
-Now you should see the packages. 
+Install ros2 eloquent - https://docs.ros.org/en/eloquent/Installation/Linux-Install-Debians.html
 ```
-ros2_unitree_legged_msgs	src/ros2_unitree_legged_msgs	(ros.ament_cmake)
-unitree_legged_real	src/unitree_ros2_to_real	(ros.ament_cmake)
-unitree_legged_sdk	src/unitree_legged_sdk	(cmake)
+sudo apt update && sudo apt install curl gnupg2 lsb-release
 ```
 
-# Running the examples
-
-All examples are hard coded for the Wifi IP address 192.168.12.1, please edit them if you are on Ethernet
-
-Start the high level server
+This key from the original documentation is invalid - https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc 
+Install new key per - https://discourse.ros.org/t/ros-gpg-key-expiration-incident/20669
 ```
-user@dev0:~$ cd ~/unitree_ros2_ws
-user@dev0:~/unitree_ros2_ws$ source /opt/ros/galactic/setup.sh
-user@dev0:~/unitree_ros2_ws$ source install/setup.sh
-user@dev0:~/unitree_ros2_ws$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./src/unitree_legged_sdk/lib/
-user@dev0:~/unitree_ros2_ws$ ros2 run unitree_legged_real ros2_udp highlevel
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+sudo apt update
+sudo apt upgrade
+
+sudo apt-get install ros-eloquent-desktop
+
+sudo apt install -y python3-pip
+pip3 install -U argcomplete
+
+source /opt/ros/eloquent/setup.bash
+
+sudo apt install python3-colcon-common-extensions
+
+sudo apt-get install git 
 ```
 
-On a second window 
+Use ssh clone method to obtain the submodules properly
 ```
-user@dev0:~$ cd ~/unitree_ros2_ws
-user@dev0:~/unitree_ros2_ws$ source /opt/ros/galactic/setup.sh
-user@dev0:~/unitree_ros2_ws$ source install/setup.sh
-user@dev0:~/unitree_ros2_ws$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./src/unitree_legged_sdk/lib/
-user@dev0:~/unitree_ros2_ws$ ros2 run unitree_legged_real ros2_walk_example
+git clone git@github.com:MAVProxyUser/unitree_ros2_ws.git --recurse-submodules
+
+git clone https://github.com/lcm-proj/lcm.git
+cd lcm 
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install 
+```
+
+Build the ros Unitree packages 
+```
+cd ../../unitree_ros2_ws/
+colcon build 
+```
+
+Update the library path permanantly
+First verify the path to the .so files, then add them to the ldconfig 
+You should still be in ~/unitree_ros2_ws
+
+```
+find /usr -name liblcm.so
+echo `pwd`/src/unitree_legged_sdk/lib/
+echo `pwd`/src/unitree_legged_sdk/lib/ > /tmp/unitree.conf
+echo /usr/local/lib/ >> /tmp/unitree.conf 
+
+sudo mv /tmp/unitree.conf /etc/ld.so.conf.d/
+sudo ldconfig
+```
+
+Sanity check the environment with example_walk, it should execute without error
+```
+source install/setup.sh 
+./build/unitree_legged_sdk/example_walk
+```
+
+
+# Ubuntu 20.04
+
+Install Ubuntu 18.04, this was written using ubuntu-20.04.5-desktop-amd64.iso from https://releases.ubuntu.com/focal/ubuntu-20.04.5-desktop-amd64.iso 
+
+Select the "Minimal installation", "Download updates while installing Ubuntu", and "Install third-party software for graphics and Wi-Fi hardware and additional media formats" options. 
+Open a terminal:
+```
+sudo apt-get install net-tools openssh-server
+sudo apt-get update
+sudo apt-get dist-upgrade
+
+reboot
+```
+
+From another machine:
+```
+ssh 192.168.1.106 
+rm -rf Documents/ Downloads/ Music/ Pictures/ Public/ Templates/ Videos/
+
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+```
+
+Install ros2 foxy (or galactic if you prefer) - https://docs.ros.org/en/foxy/Installation/Linux-Install-Debians.html
+```
+sudo apt update && sudo apt install curl gnupg2 lsb-release
+```
+
+This key from the original documentation is invalid - https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc 
+Install new key per - https://discourse.ros.org/t/ros-gpg-key-expiration-incident/20669
+```
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+sudo apt update
+sudo apt upgrade
+
+sudo apt-get install ros-foxy-desktop
+```
+alternately you can install Galactic
+```
+sudo apt-get install ros-galactic-desktop
+
+sudo apt install -y python3-pip
+pip3 install -U argcomplete
+
+source /opt/ros/eloquent/setup.bash
+```
+alternately source the foxy setup.bash
+```
+source /opt/ros/eloquent/setup.bash
+
+sudo apt install python3-colcon-common-extensions
+
+sudo apt-get install git 
+```
+
+Use ssh clone method to obtain the submodules properly
+```
+git clone git@github.com:MAVProxyUser/unitree_ros2_ws.git --recurse-submodules
+
+git clone https://github.com/lcm-proj/lcm.git
+cd lcm 
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install 
+```
+
+Build the ros Unitree packages 
+```
+cd ../../unitree_ros2_ws/
+colcon build 
+```
+
+Update the library path permanantly
+First verify the path to the .so files, then add them to the ldconfig 
+You should still be in ~/unitree_ros2_ws
+```
+find /usr -name liblcm.so
+echo `pwd`/src/unitree_legged_sdk/lib/
+echo `pwd`/src/unitree_legged_sdk/lib/ > /tmp/unitree.conf
+echo /usr/local/lib/ >> /tmp/unitree.conf 
+
+sudo mv /tmp/unitree.conf /etc/ld.so.conf.d/
+sudo ldconfig
+```
+
+Sanity check the environment with example_walk, it should execute without error
+```
+source install/setup.sh 
+./build/unitree_legged_sdk/example_walk
 ```
