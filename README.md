@@ -62,6 +62,7 @@ cmake ..
 make -j4
 sudo make install 
 ```
+You can alternately just download the source package from the Git Releases page & unpack it. https://github.com/MAVProxyUser/unitree_ros2_ws/releases/tag/v3.5.1
 
 Build the ros Unitree packages 
 ```
@@ -159,6 +160,7 @@ cmake ..
 make -j4
 sudo make install 
 ```
+You can alternately just download the source package from the Git Releases page & unpack it. https://github.com/MAVProxyUser/unitree_ros2_ws/releases/tag/v3.5.1
 
 Build the ros Unitree packages 
 ```
